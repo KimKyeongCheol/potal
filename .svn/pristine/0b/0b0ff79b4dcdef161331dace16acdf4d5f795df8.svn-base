@@ -1,0 +1,218 @@
+<%--
+  Class Name : EgovFaqDetailInqure.jsp
+  Description : EgovFaqDetailInqure 화면
+  Modification Information
+ 
+      수정일         수정자                   수정내용
+    -------    --------    ---------------------------
+     2009.02.01   박정규          최초 생성
+     2011.08.31  JJY       경량환경 버전 생성
+ 
+    author   : 공통서비스개발팀 박정규
+    since    : 2009.02.01
+--%>
+<%  
+response.setHeader("Cache-Control","no-store");  
+response.setHeader("Pragma","no-cache");  
+response.setDateHeader("Expires",0);  
+if (request.getProtocol().equals("HTTP/1.1"))
+        response.setHeader("Cache-Control", "no-cache");
+%>
+<%@ page contentType="text/html; charset=utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>자주하는 질문 상세조회</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="content-language" content="ko">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link href="<c:url value='/'/>css/import.css" rel="stylesheet"
+	type="text/css">
+<link href="<c:url value='/'/>css/dev.css" rel="stylesheet" type="text/css" >
+
+<!--[if lt IE 9]>
+	<script src="../common/js/html5shiv.min.js"></script>
+	<script src="../common/js/respond.min.js"></script>
+<![endif]-->
+
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.0/jquery-ui.js"></script>
+<script src="<c:url value='/js/slick.js' />"></script>
+<script src="<c:url value='/js/css_common.js' />"></script>
+<script type="text/javascript"
+	src="<c:url value='/js/EgovMultiFile.js'/>"></script>
+<script type="text/javaScript" language="javascript">
+/* ********************************************************
+ * 초기화
+ ******************************************************** */
+function fn_egov_initl_faq(){
+
+
+
+}
+
+/* ********************************************************
+ * 목록 으로 가기
+ ******************************************************** */
+function fn_egov_inqire_faqlist() {
+
+	document.FaqManageForm.action = "<c:url value='/FaqList.do'/>";
+	document.FaqManageForm.submit();
+		
+}
+
+/* ********************************************************
+ * 수정처리화면
+ ******************************************************** */
+function fn_egov_updt_faq(faqId){
+
+	// Update하기 위한 키값(faqId)을 셋팅
+	document.FaqManageForm.faqId.value = faqId;	
+	document.FaqManageForm.action = "<c:url value='/uss/olh/faq/FaqCnUpdtView.do'/>";
+	document.FaqManageForm.submit();	
+	
+}
+
+
+function fn_egov_delete_faq(faqId){
+
+	if	(confirm("<spring:message code="common.delete.msg" />"))	{	
+
+		// Delete하기 위한 키값(faqId)을 셋팅
+		document.FaqManageForm.faqId.value = faqId;	
+		document.FaqManageForm.action = "<c:url value='/uss/olh/faq/FaqCnDelete.do'/>";
+		document.FaqManageForm.submit();
+			
+	}
+	
+	
+}
+
+</script>
+</head>
+
+<body onLoad="fn_egov_initl_faq();">
+
+	<!-- header start -->
+	<div id="subheader">
+		<c:import url="/sym/mms/EgovMainMenuHead.do" />
+	</div>
+	<!-- //header end -->
+	<div id="bodywrap">
+		<div id="middle_content">
+			<!-- class : path-wrap : (S) -->
+			<div class="path-wrap">
+				<div class="base-inner">
+					<div class="path-list-box">
+						<ul>
+							<li><a href=""><span class="ico-home">홈</span></a></li>
+							<li><a href="">알림마당</a></li>
+							<li><a href="">자주하는 질문</a></li>
+							<li><a href="">상세조회</a></li>
+						</ul>
+					</div>
+					<div class="sns-list-box">
+						<ul>
+							<li><a href=""><span class="ico-home">홈페이지</span></a></li>
+							<li><a href=""><span class="ico-print">프린트</span></a></li>
+							<li><a href="https://www.instagram.com/jobabanet/" target="_blank"><span class="ico-face">페이스북</span></a></li>
+							<li><a href=""><span class="ico-kks">카카오스토리</span></a></li>
+							<li><a href="https://twitter.com/jobabanet" target="_blank"><span class="ico-tw">트위터</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- class : path-wrap : (E) -->
+
+			<div class="cont-body-wrap">
+				<div class="cont-tit-box">
+					<h2 class="h2">
+					자주하는 질문
+					</h2>
+				</div>
+				<!-- class : body-box : (S) -->
+				<div class="body-box">
+					<!-- class : base-inner : (S) -->
+					<div class="base-inner">
+						<!-- class : board-view-box : (S) -->
+						<div class="board-view-box">
+
+							<form name="FaqManageForm"
+								action="${pageContext.request.contextPath}/uss/olh/faq/FaqCnUpdtView.do"
+								method="post">
+
+
+								<!-- sub title start -->
+								<div class="tit-box">
+									<c:out value="${result.qestnSj}" />
+								</div>
+								<!-- sub title end -->
+									<c:if test="${not empty result.atchFileId}">
+									<div class="file-box">
+										첨부파일 :<a><c:import charEncoding="utf-8"
+												url="/cmm/fms/selectFileInfs.do">
+												<c:param name="param_atchFileId"
+													value="${result.atchFileId}" />
+											</c:import> </a>
+									</div>
+
+								</c:if>
+
+								<div class="date-box">
+									<ul>
+										<li>등록일 : <c:out value="${result.lastUpdusrPnttm}" /></li>
+										<li class="line">조회수 : <c:out value="${result.inqireCo}" /></li>
+									</ul>
+								</div>
+
+								<div>
+									<label for="qestnCn">질문내용</label>&nbsp;&nbsp;
+								</div>
+								<div class="text-box" style="white-space: pre;">
+									<c:out value="${result.qestnCn}" escapeXml="false" />
+								</div>
+
+
+								<div>
+									<label for="answerCn">답변내용</label>&nbsp;&nbsp;
+								</div>
+								<div class="text-box" style="white-space: pre;">
+									<c:out value="${result.answerCn}" escapeXml="false" />
+								</div>
+
+
+									<!-- 목록/저장버튼  시작-->
+						
+            <div class="btn-box">
+               <%--   <input type="submit" value="<spring:message code="button.update" />" onclick="fn_egov_updt_faq('<c:out value="${result.faqId}"/>'); return false;">
+                 <a href="<c:url value='/uss/olh/faq/FaqCnDelete.do'/>?faqId=<c:out value='${result.faqId}'/>" onclick="fn_egov_delete_faq('<c:out value="${result.faqId}"/>'); return false;"><spring:message code="button.delete" /></a> --%>
+              <a class="btn-line" href="<c:url value='/FaqList.do'/>" onclick="fn_egov_inqire_faqlist(); return false;"><spring:message code="button.list" /></a>
+            </div>
+
+            <!-- 목록/저장버튼  끝-->
+            
+			<input name="faqId" type="hidden" value="">
+		
+							</form>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<!-- contents end -->
+		</div>
+	</div>
+	<!-- footer 시작 -->
+	<div id="footer">
+		<c:import url="/EgovPageLink.do?link=usr/inc/EgovIncFooter" />
+	</div>
+	<!-- //footer 끝 -->
+
+
+</body>
+</html>

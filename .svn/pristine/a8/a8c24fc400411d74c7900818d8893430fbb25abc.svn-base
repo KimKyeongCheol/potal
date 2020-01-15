@@ -1,0 +1,253 @@
+/* 2019.12.10 사업신청 추가 */
+package egovframework.let.usr.dto;
+
+public class BusinessVO {
+
+	private int seq; //번호
+	
+	private String business_name; //사업신청명
+	
+	private String w_name; //이름
+	
+	private String etc_explain; //기타설명
+	
+	private String etc1; //기타옵션1
+	
+	private String etc2; //기타옵션2
+
+	private String etc3; //기타옵션3
+	
+	private String state; //상태
+	
+	private String supplement_req; //보완요청내용
+	
+	private String del_yn; //삭제유무
+	
+	private String univ_name; //대학명
+	
+	private String write_date; //등록일
+	
+	private String update_date; //변경일자
+	
+	private String file; //첨부파일
+	
+	private String year;
+	
+	/** 현재페이지 */
+    private int pageIndex = 1;
+	
+	/** 페이지갯수 */
+    private int pageUnit = 10;
+
+    /** 페이지사이즈 */
+    private int pageSize = 10;
+
+    /** 첫페이지 인덱스 */
+    private int firstIndex = 1;
+
+    /** 마지막페이지 인덱스 */
+    private int lastIndex = 1;
+
+    /** 페이지당 레코드 개수 */
+    private int recordCountPerPage = 10;
+    
+    private String atchFileId;
+    
+    private String searchType;
+    
+    private String searchWord;
+    
+    public String getSearchType() {
+		return searchType;
+	}
+
+	public void setSearchType(String searchType) {
+		this.searchType = searchType;
+	}
+
+	public String getSearchWord() {
+		return searchWord;
+	}
+
+	public void setSearchWord(String searchWord) {
+		this.searchWord = searchWord;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+    
+	public String getFile() {
+		return file;
+	}
+
+	public void setFile(String file) {
+		this.file = file;
+	}
+
+	public String getAtchFileId() {
+		return atchFileId;
+	}
+
+	public void setAtchFileId(String atchFileId) {
+		this.atchFileId = atchFileId;
+	}
+
+	public int getSeq() {
+		return seq;
+	}
+
+	public void setSeq(int seq) {
+		this.seq = seq;
+	}
+
+	public String getBusiness_name() {
+		return business_name;
+	}
+
+	public void setBusiness_name(String business_name) {
+		this.business_name = business_name;
+	}
+
+	public String getW_name() {
+		return w_name;
+	}
+
+	public void setW_name(String w_name) {
+		this.w_name = w_name;
+	}
+
+	public String getEtc_explain() {
+		return etc_explain;
+	}
+
+	public void setEtc_explain(String etc_explain) {
+		this.etc_explain = etc_explain;
+	}
+
+	public String getEtc1() {
+		return etc1;
+	}
+
+	public void setEtc1(String etc1) {
+		this.etc1 = etc1;
+	}
+
+	public String getEtc2() {
+		return etc2;
+	}
+
+	public void setEtc2(String etc2) {
+		this.etc2 = etc2;
+	}
+
+	public String getEtc3() {
+		return etc3;
+	}
+
+	public void setEtc3(String etc3) {
+		this.etc3 = etc3;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getSupplement_req() {
+		return supplement_req;
+	}
+
+	public void setSupplement_req(String supplement_req) {
+		this.supplement_req = supplement_req;
+	}
+
+	public String getDel_yn() {
+		return del_yn;
+	}
+
+	public void setDel_yn(String del_yn) {
+		this.del_yn = del_yn;
+	}
+
+	public String getUniv_name() {
+		return univ_name;
+	}
+
+	public void setUniv_name(String univ_name) {
+		this.univ_name = univ_name;
+	}
+
+	public String getWrite_date() {
+		return write_date;
+	}
+
+	public void setWrite_date(String write_date) {
+		this.write_date = write_date;
+	}
+
+	public String getUpdate_date() {
+		return update_date;
+	}
+
+	public void setUpdate_date(String update_date) {
+		this.update_date = update_date;
+	}
+
+	public int getPageUnit() {
+		return pageUnit;
+	}
+
+	public void setPageUnit(int pageUnit) {
+		this.pageUnit = pageUnit;
+	}
+
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public int getFirstIndex() {
+		return firstIndex;
+	}
+
+	public void setFirstIndex(int firstIndex) {
+		this.firstIndex = firstIndex;
+	}
+
+	public int getLastIndex() {
+		return lastIndex;
+	}
+
+	public void setLastIndex(int lastIndex) {
+		this.lastIndex = lastIndex;
+	}
+
+	public int getRecordCountPerPage() {
+		return recordCountPerPage;
+	}
+
+	public void setRecordCountPerPage(int recordCountPerPage) {
+		this.recordCountPerPage = recordCountPerPage;
+	}
+
+	public int getPageIndex() {
+		return pageIndex;
+	}
+
+	public void setPageIndex(int pageIndex) {
+		this.pageIndex = pageIndex;
+	}
+	
+}
+/* 2019.12.10 사업신청 추가 */

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!-- 2019.12.10 사업신청 추가 -->
+<sqlMap namespace="Business">
+	<typeAlias  alias="Business" type="egovframework.let.usr.dto.BusinessVO"/>
+		
+	<resultMap id="businessList" class="egovframework.let.usr.dto.BusinessVO">
+		<result property="seq" column="seq"/>
+		<result property="business_name" column="business_name"/>
+		<result property="univ_name" column="univ_name"/>
+		<result property="w_name" column="w_name"/>
+		<result property="state" column="state"/>
+		<result property="file" column="file"/>
+		<result property="supplement_req" column="supplement_req"/>
+		<result property="etc_explain" column="etc_explain"/>
+		<result property="etc1" column="etc1"/>
+		<result property="etc2" column="etc3"/>
+		<result property="etc2" column="etc3"/>
+		<result property="del_yn" column="del_yn"/>
+		<result property="write_date" column="write_date"/>
+		<result property="update_date" column="update_date"/>
+		<result property="year" column="year"/>
+		<result property="searchType" column="searchType"/>
+		<result property="searchWord" column="searchWord"/>
+	</resultMap>	
+		
+	<select id="BusinessAdminManageDAO.selectList" parameterClass="Business" resultMap="businessList">
+		<![CDATA[
+			SELECT *
+			FROM BUSINESS
+			WHERE 
+				del_yn = 'N'
+			AND 1=1
+			]]>
+			<isEqual property="searchType" compareValue="4">
+				AND (year = #searchWord# or business_name = #searchWord# or w_name = #searchWord#)
+			</isEqual>
+			<isEqual property="searchType" compareValue="0">
+				AND
+					year = #searchWord#
+			</isEqual>
+			<isEqual property="searchType" compareValue="1">
+				AND
+					business_name = #searchWord#
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND
+					w_name = #searchWord#
+			</isEqual>
+			<![CDATA[
+			ORDER BY write_date desc
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		]]>				
+	</select>
+	
+	<select id="BusinessAdminManageDAO.selectListCnt" parameterClass="Business" resultClass="java.lang.Integer" >
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				BUSINESS
+			WHERE 
+				del_yn = 'N'
+			AND 1=1
+			]]>
+			<isEqual property="searchType" compareValue="4">
+				AND (year = #searchWord# or business_name = #searchWord# or w_name = #searchWord#)
+			</isEqual>
+			<isEqual property="searchType" compareValue="0">
+				AND
+					year = #searchWord#
+			</isEqual>
+			<isEqual property="searchType" compareValue="1">
+				AND
+					business_name = #searchWord#
+			</isEqual>
+			<isEqual property="searchType" compareValue="2">
+				AND
+					w_name = #searchWord#
+			</isEqual>
+	</select>
+	
+	<insert id="BusinessAdminManageDAO.insert" parameterClass="Business" >		
+		<![CDATA[
+			/* BusinessManageDAO.insert */
+			INSERT INTO BUSINESS
+			(
+			business_name
+			,w_name
+			,file
+			,etc_explain
+			,etc1
+			,etc2
+			,etc3
+			,state
+			,supplement_req
+			,del_yn
+			,univ_name
+			,write_date
+			,update_date
+			,year
+			)
+			VALUES
+			(
+			#business_name#
+			,#w_name#
+			,#atchFileId#
+			,#etc_explain#
+			,#etc1#
+			,#etc2#
+			,#etc3#
+			,#state#
+			,#supplement_req#
+			,'N'
+			,#univ_name#
+			,NOW()
+			,#update_date#
+			,#year#
+			)			
+		]]>
+	</insert>	
+	
+	<select id="BusinessAdminManageDAO.selectView" parameterClass="Business" resultMap="businessList">
+		<![CDATA[
+			SELECT
+                *
+            FROM
+                BUSINESS
+			WHERE
+				seq = #seq#	
+			AND
+				del_yn = 'N'
+		]]>				
+	</select>
+	
+	<update id="BusinessAdminManageDAO.updateBusiness" parameterClass="Business">
+ 		<![CDATA[
+			UPDATE BUSINESS 
+			SET 
+				year = #year#,
+				business_name = #business_name#,
+				univ_name = #univ_name#,
+				file = #atchFileId#,
+				state = #state#,
+				supplement_req = #supplement_req#,
+				etc_explain = #etc_explain#,
+				update_date = NOW()
+			WHERE 
+				seq = #seq#
+			AND
+				del_yn = 'N'
+ 		]]>
+ 	</update>
+ 	
+ 	<update id="BusinessAdminManageDAO.deleteBusiness" parameterClass="Business">
+ 		<![CDATA[
+			UPDATE BUSINESS
+			SET
+				del_yn = 'Y'
+			WHERE
+				seq = #seq#
+			AND
+				del_yn = 'N'
+ 		]]>
+ 	</update>
+ 	
+</sqlMap>
+<!-- 2019.12.10 사업신청 추가 -->

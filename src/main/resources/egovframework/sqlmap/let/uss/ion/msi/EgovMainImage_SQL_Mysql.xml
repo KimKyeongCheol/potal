@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="mainImageDAO">
+
+
+    <resultMap id="mainImage" class="egovframework.let.uss.ion.msi.service.MainImageVO">
+        <result property="imageId" column="IMAGE_ID"/>
+        <result property="imageNm" column="IMAGE_NM"/>
+        <result property="image" column="IMAGE"/>
+        <result property="imageFile" column="IMAGE_FILE"/>
+        <result property="imageDc" column="IMAGE_DC"/>
+        <result property="reflctAt" column="REFLCT_AT"/>
+        <result property="userId" column="FRST_REGISTER_ID"/>
+        <result property="regDate" column="FRST_REGIST_PNTTM"/>
+          <result property="main_sub" column="MAIN_SUB"/>
+    </resultMap>
+
+    <resultMap id="image" class="egovframework.let.uss.ion.msi.service.MainImageVO">
+        <result property="imageFile" column="IMAGE_FILE"/>
+    </resultMap>
+
+    <resultMap id="mainImageFile" class="egovframework.com.cmm.service.FileVO">
+        <result property="fileStreCours" column="FILE_STRE_COURS"/>
+        <result property="streFileNm" column="STRE_FILE_NM"/>
+    </resultMap>
+
+
+    <select id="mainImageDAO.selectMainImageList" parameterClass="egovframework.let.uss.ion.msi.service.MainImageVO" resultMap="mainImage">
+            SELECT IMAGE_ID,
+                   IMAGE_NM,
+                   IMAGE,
+                   IMAGE_FILE,
+                   IMAGE_DC,
+                   REFLCT_AT,
+                   FRST_REGISTER_ID,
+                   FRST_REGIST_PNTTM,
+                   MAIN_SUB
+              FROM COMTNMAINIMAGE
+             WHERE 1=1
+              <isEqual prepend="AND" property="searchCondition" compareValue="1">
+                IMAGE_NM LIKE CONCAT('%' , #searchKeyword#, '%')
+</isEqual>
+            ORDER BY FRST_REGIST_PNTTM DESC
+            LIMIT #recordCountPerPage# OFFSET #firstIndex#  
+    </select>
+
+    <select id="mainImageDAO.selectMainImageListTotCnt" parameterClass="egovframework.let.uss.ion.msi.service.MainImageVO" resultClass="int">
+
+            SELECT COUNT(*) totcnt
+            FROM COMTNMAINIMAGE
+            WHERE 1=1
+  <isEqual prepend="AND" property="searchCondition" compareValue="1">
+                IMAGE_NM LIKE CONCAT('%' , #searchKeyword#, '%')
+</isEqual>
+    </select>
+    
+
+
+    <select id="mainImageDAO.selectMainImage" resultMap="mainImage">
+        
+            SELECT IMAGE_ID,
+                   IMAGE_NM,
+                   IMAGE,
+                   IMAGE_FILE,
+                   IMAGE_DC,
+                   REFLCT_AT,
+                   FRST_REGISTER_ID,
+                   FRST_REGIST_PNTTM,
+                   MAIN_SUB
+              FROM COMTNMAINIMAGE 
+             WHERE IMAGE_ID = #imageId#
+    </select>
+
+    <insert id="mainImageDAO.insertMainImage" parameterClass="egovframework.let.uss.ion.msi.service.MainImage">
+        
+            INSERT INTO COMTNMAINIMAGE  
+                       (IMAGE_ID,
+                        IMAGE_NM,
+                        IMAGE,
+                        IMAGE_FILE,
+                        IMAGE_DC,
+                        REFLCT_AT,
+                        FRST_REGISTER_ID,
+                        FRST_REGIST_PNTTM,
+                        MAIN_SUB)
+                VALUES (#imageId#,
+                        #imageNm#,
+                        #image#,
+                        #imageFile#,
+                        #imageDc#,
+                        #reflctAt#,
+                        #userId#,
+                        now(),
+                        #main_sub#)
+        
+    </insert>    
+
+    <update id="mainImageDAO.updateMainImage" parameterClass="egovframework.let.uss.ion.msi.service.MainImage">
+            UPDATE COMTNMAINIMAGE
+               SET IMAGE_NM = #imageNm#,
+                 <isEqual property="isAtchFile" compareValue="true">
+                   IMAGE = #image#,
+                   IMAGE_FILE = #imageFile#,
+</isEqual>
+                   IMAGE_DC = #imageDc#,
+                   REFLCT_AT = #reflctAt#,
+                   LAST_UPDUSR_ID = #userId#,
+                   LAST_UPDT_PNTTM = now()
+             WHERE IMAGE_ID = #imageId#
+    </update>   
+    
+    <delete id="mainImageDAO.deleteMainImage" parameterClass="egovframework.let.uss.ion.msi.service.MainImage">
+        
+            DELETE FROM COMTNMAINIMAGE 
+             WHERE IMAGE_ID = #imageId#
+    </delete>  
+
+    <select id="mainImageDAO.selectMainImageResult" resultMap="image">
+            SELECT IMAGE_FILE ,FRST_REGIST_PNTTM ,LAST_UPDT_PNTTM   
+              FROM COMTNMAINIMAGE 
+             WHERE REFLCT_AT = 'Y'
+        	AND MAIN_SUB ='main'
+        	ORDER BY DATE(FRST_REGIST_PNTTM) DESC,
+        	LAST_UPDT_PNTTM DESC
+    </select>
+
+    <select id="mainImageDAO.selectSubImageResult" resultMap="image">
+        
+            SELECT IMAGE_FILE ,FRST_REGIST_PNTTM ,LAST_UPDT_PNTTM             
+              FROM COMTNMAINIMAGE 
+             WHERE REFLCT_AT = 'Y'
+        	AND MAIN_SUB ='sub'
+        	ORDER BY DATE(FRST_REGIST_PNTTM) DESC,
+        	LAST_UPDT_PNTTM DESC
+    </select>
+    
+    <select id="mainImageDAO.selectMainImageFile" parameterClass="egovframework.let.uss.ion.msi.service.MainImage" resultMap="mainImageFile">
+        
+            SELECT B.FILE_STRE_COURS AS FILE_STRE_COURS,
+                   B.STRE_FILE_NM AS STRE_FILE_NM
+              FROM COMTNMAINIMAGE A,
+                   LETTNFILEDETAIL B
+             WHERE 1 = 1
+               AND IMAGE_ID = #imageId#
+               AND A.IMAGE_FILE = B.ATCH_FILE_ID
+        
+    </select>
+    
+    
+    
+</sqlMap>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="BkmkMenuManageDAO">
+    
+    <resultMap id="BkmkInfs" class="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO">
+		<result property="menuId" column="MENU_ID"/>
+		<result property="userId" column="EMPLYR_ID"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="progrmStrePath" column="PROGRM_STRE_PATH"/>	
+	</resultMap>
+	
+	<resultMap id="MenuInfs" class="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO">
+		<result property="menuId" column="MENU_NO"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="menuDc" column="MENU_DC"/>
+	</resultMap>
+	
+	<resultMap id="menuManage" class="egovframework.let.sym.mnu.mpm.service.MenuManageVO">
+		<result property="menuNo" column="MENU_NO"/>
+		<result property="menuOrdr" column="MENU_ORDR"/>
+		<result property="menuNm" column="MENU_NM"/>
+		<result property="upperMenuId" column="UPPER_MENU_NO"/>
+		<result property="menuDc" column="MENU_DC"/>
+		<result property="relateImagePath" column="RELATE_IMAGE_PATH"/>
+		<result property="relateImageNm" column="RELATE_IMAGE_NM"/>
+		<result property="progrmFileNm" column="PROGRM_FILE_NM"/>
+	</resultMap>
+	
+	<select id="BkmkMenuManageDAO.selectBkmkPreview" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultMap="menuManage">
+		 
+			SELECT 
+			 	 MENU_NO, MENU_ORDR, MENU_NM, UPPER_MENU_NO,MENU_DC, RELATE_IMAGE_PATH, RELATE_IMAGE_NM, 
+			 	 PROGRM_FILE_NM
+			 FROM 
+			 	LETTNMENUINFO  , (SELECT  MENU_ID 
+                                                  FROM LETTNBKMKMENUMANAGERESULT  WHERE EMPLYR_ID = #userId# )b
+			 WHERE
+			 	MENU_NO = b.MENU_ID
+		 
+	</select>
+	
+	<select id="BkmkMenuManageDAO.selectBkmkMenuManage" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO">
+		 
+			 SELECT 
+			 	MENU_ID , EMPLYR_ID, MENU_NM, PROGRM_STRE_PATH 
+			 FROM 
+			 	LETTNBKMKMENUMANAGERESULT
+			 WHERE
+			 	MENU_ID = #menuId# AND EMPLYR_ID = #userId#
+		 
+	</select>		
+
+	<insert id="BkmkMenuManageDAO.insertBkmkMenuManage" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManage">
+		
+			INSERT INTO LETTNBKMKMENUMANAGERESULT
+			( MENU_ID , EMPLYR_ID, MENU_NM, PROGRM_STRE_PATH
+			)
+			VALUES
+			( #menuId#, #userId#, #menuNm#, #progrmStrePath#
+			)		
+		
+	</insert>
+	
+	<delete id="BkmkMenuManageDAO.deleteBkmkMenuManage" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManage">
+		
+			DELETE FROM LETTNBKMKMENUMANAGERESULT 
+			WHERE 
+				MENU_ID = #menuId# AND EMPLYR_ID = #userId#			
+		
+	</delete>
+	
+	<select id="BkmkMenuManageDAO.selectBkmkMenuManageList" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultMap="BkmkInfs">
+		
+			SELECT 
+			 	MENU_ID , EMPLYR_ID, MENU_NM, PROGRM_STRE_PATH 
+			 FROM 
+			 	LETTNBKMKMENUMANAGERESULT
+			 WHERE
+			 	EMPLYR_ID = #userId#				 						
+						<isEqual prepend="AND" property="searchCnd"
+			compareValue="0">
+					MENU_NM LIKE CONCAT ('%', #searchWrd#,'%') 		
+</isEqual>
+			
+					
+			ORDER BY MENU_NM 
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+						
+	</select>	
+
+	<select id="BkmkMenuManageDAO.selectBkmkMenuManageListCnt" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultClass="int">
+		 
+			select count(MENU_ID) 
+			from   LETTNBKMKMENUMANAGERESULT
+			WHERE
+			 	EMPLYR_ID = #userId#					
+			
+									<isEqual prepend="AND" property="searchCnd"
+			compareValue="0">
+					MENU_NM LIKE CONCAT ('%', #searchWrd#,'%') 		
+</isEqual>
+		
+	</select>
+	
+	<select id="BkmkMenuManageDAO.selectBkmkMenuList" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultMap="MenuInfs">
+		
+			SELECT 
+			 	d.MENU_NO, d.MENU_NM, d.MENU_DC
+			 FROM 
+			 	LETTNMENUINFO d, (SELECT a.MENU_NO  FROM LETTNMENUCREATDTLS a, COMTNEMPLYRSCRTYESTBS b , COMVNUSERMASTER c 
+						WHERE a.AUTHOR_CODE = b.AUTHOR_CODE AND b.SCRTY_DTRMN_TRGET_ID = c.ESNTL_ID AND c.USER_ID = #userId#)temp
+			 WHERE
+			 	d.PROGRM_FILE_NM != 'dir' 
+				AND d.MENU_NO = temp.MENU_NO
+				AND d.menu_no not in (SELECT MENU_ID FROM LETTNBKMKMENUMANAGERESULT WHERE EMPLYR_ID = #userId#)			
+				
+						<isEqual prepend="AND" property="searchCnd"
+			compareValue="0">
+					MENU_NM LIKE CONCAT ('%', #searchWrd#,'%') 		
+</isEqual>
+			
+					
+			ORDER BY MENU_NM 
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+						
+	</select>	
+
+	<select id="BkmkMenuManageDAO.selectBkmkMenuListCnt" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManageVO" resultClass="int">
+		 
+			select count(d.MENU_NO) 
+			 FROM 
+			 	LETTNMENUINFO d, (SELECT a.MENU_NO  FROM LETTNMENUCREATDTLS a, COMTNEMPLYRSCRTYESTBS b , COMVNUSERMASTER c 
+						WHERE a.AUTHOR_CODE = b.AUTHOR_CODE AND b.SCRTY_DTRMN_TRGET_ID = c.ESNTL_ID AND c.USER_ID = #userId#)temp
+			 WHERE
+			 	d.PROGRM_FILE_NM != 'dir' 
+				AND d.MENU_NO = temp.MENU_NO
+				AND d.menu_no not in (SELECT MENU_ID FROM LETTNBKMKMENUMANAGERESULT WHERE EMPLYR_ID = #userId#)						
+				
+						<isEqual prepend="AND" property="searchCnd"
+			compareValue="0">
+					MENU_NM LIKE CONCAT ('%', #searchWrd#,'%') 		
+</isEqual>
+		
+	</select>
+	
+	<select id="BkmkMenuManageDAO.selectUrl" parameterClass="egovframework.let.sym.mnu.bmm.service.BkmkMenuManage" resultClass="String">
+		 
+			SELECT a.URL
+			FROM   COMTNPROGRMLIST a, (SELECT  MENU_NO , PROGRM_FILE_NM 
+                                                  FROM LETTNMENUINFO  WHERE MENU_NO = #menuId# )b
+			WHERE
+			 	   a.PROGRM_FILE_NM = b.PROGRM_FILE_NM			
+				
+			
+		
+	</select>
+</sqlMap>

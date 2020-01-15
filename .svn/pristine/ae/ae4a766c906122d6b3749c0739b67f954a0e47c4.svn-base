@@ -1,0 +1,134 @@
+package egovframework.let.uat.uia.service;
+
+import egovframework.com.cmm.LoginVO;
+import egovframework.let.cop.bbs.service.Board;
+/**
+ * 일반 로그인을 처리하는 비즈니스 인터페이스 클래스
+ * @author 공통서비스 개발팀 박지욱
+ * @since 2009.03.06
+ * @version 1.0
+ * @see
+ *  
+ * <pre>
+ * << 개정이력(Modification Information) >>
+ * 
+ *   수정일      수정자          수정내용
+ *  -------    --------    ---------------------------
+ *  2009.03.06  박지욱          최초 생성 
+ *  2011.08.31  JJY            경량환경 템플릿 커스터마이징버전 생성 
+ *  
+ *  </pre>
+ */
+public interface EgovLoginService {
+
+	/**
+	 * 일반 로그인을 처리한다
+	 * @return LoginVO
+	 * 
+	 * @param vo    LoginVO
+	 * @exception Exception Exception
+	 */
+	public LoginVO actionLogin(LoginVO vo)
+	  throws Exception;
+
+	/**
+	 * 아이디를 찾는다.
+	 * @return LoginVO
+	 * 
+	 * @param vo    LoginVO
+	 * @exception Exception Exception
+	 */
+	public LoginVO searchId(LoginVO vo)
+	  throws Exception;
+
+	/**
+	 * 비밀번호를 찾는다.
+	 * @return boolean
+	 * 
+	 * @param vo    LoginVO
+	 * @exception Exception Exception
+	 */
+	public boolean searchPassword(LoginVO vo)
+	  throws Exception;
+	
+	/**
+	 * 관리자 로그인을 처리한다
+	 * @return LoginVO
+	 * 
+	 * @param vo    LoginVO
+	 * @exception Exception Exception
+	 */
+	public LoginVO AdminactionLogin(LoginVO vo)
+	  throws Exception;
+	
+	/*20191204*/
+	/**
+	 * sns 아이디 연동 추가
+	 * 
+	 * @param LoginVO
+	 * @exception Exception Exception
+	 */
+	public void insertNvLink(LoginVO vo)
+	  throws Exception;
+	
+	/**
+	 * sns 아이디 연동 조회
+	 * 
+	 * @param LoginVO
+	 * @return 
+	 * @exception Exception Exception
+	 */
+	public LoginVO selectNvLink(LoginVO vo)
+	  throws Exception;
+
+	
+	/**
+	 * sns 아이디 로그인처리
+	 * 
+	 * @param LoginVO
+	 * @return 
+	 * @exception Exception Exception
+	 */
+	public LoginVO sns_Login(LoginVO vo)
+	throws Exception;
+	/**
+	 * sns 아이디 조회
+	 * 
+	 * @param LoginVO
+	 * @return 
+	 * @exception Exception Exception
+	 */
+	public LoginVO selectIdLink(LoginVO vo)
+	throws Exception;
+	
+	
+	/**
+	 * sns 아이디 삭제
+	 * 
+	 * @param LoginVO
+	 * @return 
+	 * @exception Exception Exception
+	 */
+	public LoginVO sns_link_del(LoginVO vo)
+	throws Exception;
+
+	
+	/**
+	 * 관리자페이지 권한체크
+	 * 
+	 * @param LoginVO
+	 * @return 
+	 * @exception Exception Exception
+	 */
+	
+	
+	public LoginVO admin_chk(LoginVO vo) throws Exception;
+	
+	
+	
+	/*20191219 비밀번호 찾기 추가*/
+	public LoginVO searchPass(LoginVO vo) throws Exception;
+	
+	/*20191219 비밀번호 찾기 추가*/
+	
+}

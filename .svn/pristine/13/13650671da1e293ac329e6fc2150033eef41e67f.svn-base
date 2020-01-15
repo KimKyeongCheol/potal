@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!-- 2019.12.10 사업신청 추가 -->
+<sqlMap namespace="Business">
+	<typeAlias  alias="Business" type="egovframework.let.usr.dto.BusinessVO"/>
+	<typeAlias  alias="mberVO"   type = "egovframework.let.uss.umt.service.MberManageVO"/>
+		
+	<resultMap id="businessList" class="egovframework.let.usr.dto.BusinessVO">
+		<result property="seq" column="seq"/>
+		<result property="business_name" column="business_name"/>
+		<result property="univ_name" column="univ_name"/>
+		<result property="w_name" column="w_name"/>
+		<result property="state" column="state"/>
+		<result property="file" column="file"/>
+		<result property="supplement_req" column="supplement_req"/>
+		<result property="etc_explain" column="etc_explain"/>
+		<result property="etc1" column="etc1"/>
+		<result property="etc2" column="etc3"/>
+		<result property="etc2" column="etc3"/>
+		<result property="del_yn" column="del_yn"/>
+		<result property="write_date" column="write_date"/>
+		<result property="update_date" column="update_date"/>
+	</resultMap>	
+		
+	<select id="BusinessManageDAO.selectList" parameterClass="Business" resultMap="businessList">
+		<![CDATA[
+			SELECT *
+			FROM BUSINESS
+			WHERE 
+				w_name = #w_name# 
+			AND 
+				del_yn = 'N'
+			ORDER BY write_date desc
+			LIMIT #recordCountPerPage# OFFSET #firstIndex#
+		]]>				
+	</select>
+	
+	<insert id="BusinessManageDAO.insert" parameterClass="Business" >		
+		<![CDATA[
+			/* BusinessManageDAO.insert */
+			INSERT INTO BUSINESS
+			(
+			business_name
+			,w_name
+			,file
+			,etc_explain
+			,etc1
+			,etc2
+			,etc3
+			,state
+			,supplement_req
+			,del_yn
+			,univ_name
+			,write_date
+			,update_date
+			)
+			VALUES
+			(
+			#business_name#
+			,#w_name#
+			,#atchFileId#
+			,#etc_explain#
+			,#etc1#
+			,#etc2#
+			,#etc3#
+			,#state#
+			,#supplement_req#
+			,'N'
+			,#univ_name#
+			,NOW()
+			,#update_date#
+			)			
+		]]>
+	</insert>	
+	
+	<select id="BusinessManageDAO.selectListCnt" parameterClass="Business" resultClass="java.lang.Integer" >
+		<![CDATA[
+			SELECT
+				COUNT(*)
+			FROM
+				BUSINESS
+			WHERE 
+				w_name = #w_name#
+			AND
+				del_yn = 'N'
+		]]>			
+	</select>
+	
+	<select id="BusinessManageDAO.selectView" parameterClass="Business" resultMap="businessList">
+		<![CDATA[
+			SELECT
+                *
+            FROM
+                BUSINESS
+			WHERE
+				seq = #seq#
+			AND 
+				del_yn = 'N'
+		]]>				
+	</select>
+	
+	<update id="BusinessManageDAO.updateBusiness" parameterClass="Business">
+			UPDATE BUSINESS 
+			SET 
+				business_name = #business_name#,
+				univ_name = #univ_name#, 
+				file = #atchFileId#,
+				etc_explain = #etc_explain#,
+				<isEqual property="state" compareValue="3">
+					state = #state#,
+				</isEqual>
+				update_date = NOW()
+			WHERE 
+				seq = #seq#
+			AND 
+				del_yn = 'N'
+ 	</update>
+ 	
+ 	<update id="BusinessManageDAO.deleteBusiness" parameterClass="Business">
+ 		<![CDATA[
+			UPDATE BUSINESS
+			SET
+				del_yn = 'Y'
+			WHERE
+				seq = #seq#
+			AND
+				del_yn = 'N'
+ 		]]>
+ 	</update>
+ 	
+	<select id="BusinessManageDAO.getCert" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT
+                REAL_NAME_CERTIFICATION
+            FROM
+                lettngnrlmber
+			WHERE
+				MBER_NM = #w_name#			
+		]]>				
+	</select>
+ 	
+</sqlMap>
+<!-- 2019.12.10 사업신청 추가 -->

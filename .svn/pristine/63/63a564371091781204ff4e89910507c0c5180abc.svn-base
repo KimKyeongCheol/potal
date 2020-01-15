@@ -1,0 +1,66 @@
+.txt-title {height:3rem; overflow:hidden;}
+
+.main-row-01 .main-notice-wrap .notice-list-box .txt-inner-box {max-height:11.9rem;overflow:hidden;}
+    
+.main-row-01 .main-notice-wrap .notice-list-box .txt-inner-box .txt-s {height: 8rem;    overflow: hidden;}
+
+.main-row-02 .item-box ul li {text-indent: -0.5rem; padding-left: 0.5rem;}
+.main-row-03 .cal-month-box .cal-day-box li {height:2.1rem;}
+.main-row-03 .cal-today-text {min-height:5rem;}
+
+
+.login .base-inner {width:53rem !important;}
+.text-box1 {padding:10px; border:1px solid #ccc; broder-radius:5px;margin:auto;margin-bottom:20px;width:100%;}	
+.login table {width:100%;border-top:2px solid #444;margin:auto;}
+.login table tr {border-bottom:1px solid #999;height:3rem;}
+.login table tr td {padding:5px;}
+.login .idinput {margin-bottom:2rem;min-height:7rem;padding-top:2rem;}
+.login .idinput table {width:70%;float:left;}
+.login .idinput th {border-left:1px solid #ccc;}
+.login .idinput td {border-right:1px solid #ccc;}
+
+.loginbtn {float:left;padding:2rem;}
+.login th {width:24%;min-width:115px;}
+.slslogin table {width:100%;}
+.snslogin ul li {display:inline-block;padding:10px;width:210px;}	
+.snslogin ul li img {width:100%;}
+.btn1 {color:#fff;text-align:center;display:inline-block;font-size:0.9rem;background:rgb(74, 91, 117);line-height:2.3rem;width:8rem;}
+.btn2 {border:1px solid #0e050b;text-align:center;display:inline-block;line-height:2.3rem;color:#0e050b;font-size:0.9rem;width:8rem;}
+.findid {padding-top:6rem;}
+
+
+.error_body {width:30rem;text-align:center;margin:auto;font-size:1.4rem;margin-top:3rem;}
+.message {border-top:1px solid #ccc;margin-top:1rem;}
+.gohome {padding-bottom:1rem;border-bottom:1px solid #ccc;margin-top:1rem;}
+.gohome p {text-align:center;border-radius:10px;background-color:#386beb;width:15rem;height:4rem;text-align:center;margin:auto;font-size:1.3rem;line-height:4rem;}
+.gohome p a {color:#Fff;}
+.gohome a:link {}
+
+
+.myinfo .base-inner {width:53rem;}
+	.text-box1 {padding:10px; border:1px solid #ccc; broder-radius:5px;margin:auto;margin-bottom:20px;width:100%;}	
+.myinfo table {width:100%;border-top:2px solid #444;margin:auto;}
+.myinfo table tr {border-bottom:1px solid #999;height:3rem;}
+.myinfo .sec1 {margin-bottom:2rem;}
+
+.myinfo .sns_link {border:1px solid #aaa;padding:0.5rem;}
+.myinfo .sns_link div {border-bottom:1px solid #aaa;}
+.myinfo	._left {background-color:#ccc;display:inline-block;text-align:left;padding:0.3rem 1rem 0.3rem 1rem;}
+.myinfo	._right {margin-left:0.5rem;display:inline-block;}
+.myinfo .sns_link p {margin-top:0.5rem;margin-bottom:0.5rem;}
+.myinfo .sns_link p img {vertical-align:text-top;width:8rem;}
+
+
+/*마이페이지*/
+.mypage_menu li ul li {display:inline-block; width:6rem; padding:0.3rem 0.8rem;border:1px solid #ccc;
+	line-height:2rem;text-align:center;margin-bottom:3rem;
+}
+.menu_on  {background: #0c6fb6;    color: #fff;}
+
+
+@media screen and (max-width:1090px){  
+	.main-row-01 .main-notice-wrap {height:18rem}
+	.main-row-01 .main-banner-wrap {width:80%;margin:auto;}   
+	.main-row-02 .grally-box .avi-box {padding-bottom:16%}
+}
+

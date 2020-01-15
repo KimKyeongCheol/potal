@@ -1,0 +1,762 @@
+package egovframework.let.uat.uia.web;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.xmlbeans.SystemProperties;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import egovframework.com.cmm.ComDefaultCodeVO;
+import egovframework.com.cmm.EgovMessageSource;
+import egovframework.com.cmm.LoginVO;
+import egovframework.com.cmm.service.EgovCmmUseService;
+import egovframework.let.utl.sim.service.EgovClntInfo;
+import egovframework.let.uat.uia.service.EgovLoginService;
+import egovframework.let.uss.umt.service.UserDefaultVO;
+import egovframework.rte.fdl.cmmn.trace.LeaveaTrace;
+import egovframework.rte.fdl.property.EgovPropertyService;
+import egovframework.rte.fdl.security.userdetails.util.EgovUserDetailsHelper;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+/**
+ * 일반 로그인을 처리하는 컨트롤러 클래스
+ * 
+ * @author 공통서비스 개발팀 박지욱
+ * @since 2009.03.06
+ * @version 1.0
+ * @see
+ *
+ *      <pre>
+ * << 개정이력(Modification Information) >>
+ *
+ *   수정일      수정자          수정내용
+ *  -------    --------    ---------------------------
+ *  2009.03.06  박지욱          최초 생성
+ *  2011.08.31  JJY            경량환경 템플릿 커스터마이징버전 생성
+ *
+ *      </pre>
+ */
+@Controller
+public class EgovLoginController {
+
+	/** EgovLoginService */
+	@Resource(name = "loginService")
+	private EgovLoginService loginService;
+
+	/** EgovMessageSource */
+	@Resource(name = "egovMessageSource")
+	EgovMessageSource egovMessageSource;
+
+	/** EgovPropertyService */
+	@Resource(name = "propertiesService")
+	protected EgovPropertyService propertiesService;
+
+	/** TRACE */
+	@Resource(name = "leaveaTrace")
+	LeaveaTrace leaveaTrace;
+
+	/** EgovCmmUseService */
+	@Resource(name = "EgovCmmUseService")
+	private EgovCmmUseService cmmUseService;
+
+	/** log */
+	private static final Logger LOGGER = LoggerFactory.getLogger(EgovLoginController.class);
+
+	/**
+	 * 로그인 화면으로 들어간다
+	 * 
+	 * @param vo
+	 *            - 로그인후 이동할 URL이 담긴 LoginVO
+	 * @return 로그인 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/egovLoginUsr.do")
+	public String loginUsrView(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model) throws Exception {
+		
+
+		return "uat/uia/EgovLoginUsr";
+	}
+
+	/**
+	 * 로그인 화면으로 들어간다
+	 * 
+	 * @param vo
+	 *            - 로그인후 이동할 URL이 담긴 LoginVO
+	 * @return 로그인 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/egovLoginAdmin.do")
+	public String loginAdminView(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model) throws Exception {
+		return "uat/uia/EgovLoginAdmin";
+	}
+
+	/**
+	 * 로그인 화면으로 들어간다
+	 * 
+	 * @param vo
+	 *            - 로그인후 이동할 URL이 담긴 LoginVO
+	 * @return 로그인 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/egovLoginManager.do")
+	public String loginManagerView(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model) throws Exception {
+		return "uat/uia/EgovLoginManager";
+	}
+
+	/**
+	 * 일반(스프링 시큐리티) 로그인을 처리한다
+	 * 
+	 * @param vo
+	 *            - 아이디, 비밀번호가 담긴 LoginVO
+	 * @param request
+	 *            - 세션처리를 위한 HttpServletRequest
+	 * @return result - 로그인결과(세션정보)
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/actionSecurityLogin.do")
+	public String actionSecurityLogin(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model) throws Exception {
+
+		
+
+		
+
+			/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+			String referer = (String) request.getHeader("referer");
+			/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+			LoginVO resultVO ;
+			
+/*20191216 비로그인 상태에서 관리자 페이지 의 메뉴 주소로 이동시 체크 추가*/
+			if(loginVO.getId() !=null) {
+				
+			String snspath = request.getParameter("sns")==null ? "" : request.getParameter("sns");
+
+			
+			if((snspath.equals("naver")) || (snspath.equals("kakao"))) {
+				/* sns계정으로 로그인시도시  20191209*/
+				resultVO = loginService.sns_Login(loginVO);
+				 
+			}else {
+			// 1. 일반 로그인 처리
+				
+			 resultVO = loginService.actionLogin(loginVO);
+			 
+			
+			}
+			boolean loginPolicyYn = true;
+
+			if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("") && loginPolicyYn) {
+				// 2. spring security 연동
+				request.getSession().setAttribute("LoginVO", resultVO);
+
+				/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+				request.getSession().setAttribute("retUrl", referer);
+				/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+
+				UsernamePasswordAuthenticationFilter springSecurity = null;
+
+				ApplicationContext act = WebApplicationContextUtils
+						.getRequiredWebApplicationContext(request.getSession().getServletContext());
+
+				Map<String, UsernamePasswordAuthenticationFilter> beans = act
+						.getBeansOfType(UsernamePasswordAuthenticationFilter.class);
+				
+				if (beans.size() > 0) {
+					springSecurity = (UsernamePasswordAuthenticationFilter) beans.values().toArray()[0];
+					springSecurity.setUsernameParameter("egov_security_username");
+					springSecurity.setPasswordParameter("egov_security_password");
+					springSecurity.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(
+							request.getServletContext().getContextPath() + "/egov_security_login", "POST"));
+				
+				} else {
+					
+					throw new IllegalStateException("No AuthenticationProcessingFilter");
+				}
+
+				springSecurity.setContinueChainBeforeSuccessfulAuthentication(false); // false 이면 chain 처리 되지 않음..
+																// (filter가
+																						// 아닌 경우 false로...)
+				
+				
+				
+				
+				springSecurity.doFilter(new RequestWrapperForSecurity(request, resultVO.getUserSe() + resultVO.getId(),
+						resultVO.getUniqId()), response, null);
+				
+				return "forward:/mainPage.do"; // 성공 시 페이지.. (redirect 불가)
+
+			} else {
+				
+				response.setContentType("text/html; charset=UTF-8");
+				 
+				PrintWriter out = response.getWriter();
+				 
+				out.println("<script>alert('아이디 또는 비밀번호가 올바르지 않습니다.'); location.href='"+request.getServletContext().getContextPath()+"/uat/uia/egovLoginUsr.do';</script>");
+				 
+				out.flush();
+				
+				out.close();
+
+				return "uat/uia/EgovLoginUsr";
+			}
+			
+			}else{
+				
+				response.setContentType("text/html; charset=UTF-8");
+				 
+				PrintWriter out = response.getWriter();
+				 
+				out.println("<script>alert('로그인후 이용 부탁드립니다.'); location.href='"+request.getServletContext().getContextPath()+"/uat/uia/egovLoginUsr.do';</script>");
+				 
+				out.flush();
+				
+				out.close();
+
+				return "uat/uia/EgovLoginUsr";
+			}
+			/*20191216 비로그인 상태에서 관리자 페이지 의 메뉴 주소로 이동시 체크 추가*/
+
+		}
+
+
+	/**
+	 * 관리자(스프링 시큐리티) 로그인을 처리한다
+	 * 
+	 * @param vo
+	 *            - 아이디, 비밀번호가 담긴 LoginVO
+	 * @param request
+	 *            - 세션처리를 위한 HttpServletRequest
+	 * @return result - 로그인결과(세션정보)
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/AdminSecurityLogin.do")
+	public String AdminSecurityLogin(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model, HttpSession session) throws Exception {
+
+		/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+		String retUrl = (String) request.getHeader("referer");
+		/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+
+		// 1. 일반 로그인 처리
+		LoginVO resultVO = loginService.AdminactionLogin(loginVO);
+		boolean loginPolicyYn = true;
+		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("") && loginPolicyYn) {
+
+			/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+			session.setAttribute("retUrl", retUrl);
+			/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+
+			// 2. spring security 연동
+			request.getSession().setAttribute("LoginVO", resultVO);
+			UsernamePasswordAuthenticationFilter springSecurity = null;
+			ApplicationContext act = WebApplicationContextUtils
+					.getRequiredWebApplicationContext(request.getSession().getServletContext());
+			Map<String, UsernamePasswordAuthenticationFilter> beans = act
+					.getBeansOfType(UsernamePasswordAuthenticationFilter.class);
+			if (beans.size() > 0) {
+				springSecurity = (UsernamePasswordAuthenticationFilter) beans.values().toArray()[0];
+				springSecurity.setUsernameParameter("egov_security_username");
+				springSecurity.setPasswordParameter("egov_security_password");
+				springSecurity.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(
+						request.getServletContext().getContextPath() + "/egov_security_login", "POST"));
+
+			} else {
+				throw new IllegalStateException("No AuthenticationProcessingFilter");
+			}
+			springSecurity.setContinueChainBeforeSuccessfulAuthentication(false);
+			springSecurity.doFilter(new RequestWrapperForSecurity(request, resultVO.getUserSe() + resultVO.getId(),
+					resultVO.getUniqId()), response, null);
+			return "forward:/mainPage.do";
+
+		} else {
+			model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
+			return "uat/uia/EgovLoginUsr";
+		}
+	}
+
+	/**
+	 * 담당자(스프링 시큐리티) 로그인을 처리한다
+	 * 
+	 * @param vo
+	 *            - 아이디, 비밀번호가 담긴 LoginVO
+	 * @param request
+	 *            - 세션처리를 위한 HttpServletRequest
+	 * @return result - 로그인결과(세션정보)
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/ManagerSecurityLogin.do")
+	public String ManagerSecurityLogin(@ModelAttribute("loginVO") LoginVO loginVO, HttpServletRequest request,
+			HttpServletResponse response, ModelMap model) throws Exception {
+
+		// 1. 일반 로그인 처리
+		LoginVO resultVO = loginService.actionLogin(loginVO);
+
+		boolean loginPolicyYn = true;
+
+		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("") && loginPolicyYn) {
+
+			// 2. spring security 연동
+			request.getSession().setAttribute("LoginVO", resultVO);
+
+			UsernamePasswordAuthenticationFilter springSecurity = null;
+
+			ApplicationContext act = WebApplicationContextUtils
+					.getRequiredWebApplicationContext(request.getSession().getServletContext());
+
+			Map<String, UsernamePasswordAuthenticationFilter> beans = act
+					.getBeansOfType(UsernamePasswordAuthenticationFilter.class);
+
+			if (beans.size() > 0) {
+				springSecurity = (UsernamePasswordAuthenticationFilter) beans.values().toArray()[0];
+				springSecurity.setUsernameParameter("egov_security_username");
+				springSecurity.setPasswordParameter("egov_security_password");
+				springSecurity.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(
+						request.getServletContext().getContextPath() + "/egov_security_login", "POST"));
+
+			} else {
+				throw new IllegalStateException("No AuthenticationProcessingFilter");
+			}
+
+			springSecurity.setContinueChainBeforeSuccessfulAuthentication(false); // false 이면 chain 처리 되지 않음.. (filter가
+																					// 아닌 경우 false로...)
+			springSecurity.doFilter(new RequestWrapperForSecurity(request, resultVO.getUserSe() + resultVO.getId(),
+					resultVO.getUniqId()), response, null);
+			return "forward:/ManagerPage.do"; // 성공 시 페이지.. (redirect 불가)
+
+		} else {
+			model.addAttribute("message", egovMessageSource.getMessage("fail.common.login"));
+			return "uat/uia/EgovLoginUsr";
+		}
+	}
+
+	/**
+	 * 로그인 후 메인화면으로 들어간다
+	 * 
+	 * @param
+	 * @return 로그인 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/actionMain.do")
+	public String actionMain(ModelMap model, HttpServletRequest request) throws Exception {
+
+	
+		// 1. Spring Security 사용자권한 처리
+		Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
+
+		HttpSession session = request.getSession();
+
+		
+		/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+		String retUrl = "";
+		if (session.getAttribute("retUrl") != null) {
+			retUrl = (String) session.getAttribute("retUrl");
+			if (retUrl.indexOf("egovLoginUsr.do") > -1 ||retUrl.indexOf("sns_login.do") > -1 ) {
+				retUrl = "/";
+			}
+		} else {
+			retUrl = "/";
+		}
+
+		String temp = retUrl;
+		if (temp.indexOf("http:") > -1) {
+			String temp1 = temp.replace("http:", "https:");
+			temp = temp1;
+		}
+		/* 2019.11.28 사용자 로그인 리턴주소 추가 */
+		return "redirect:" + retUrl;
+	}
+
+	/**
+	 * 로그아웃한다.
+	 * 
+	 * @return String
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/actionLogout.do")
+	public String actionLogout(HttpServletRequest request, ModelMap model) throws Exception {
+		request.getSession().setAttribute("LoginVO", null);
+
+		return "redirect:/egov_security_logout";
+		/* return "forward:/mainPage.do"; */
+	}
+
+	/**
+	 * 관리자 페이지 로그아웃한다.
+	 * 
+	 * @return String
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/AdminLogout.do")
+	public String AdminLogout(HttpServletRequest request, ModelMap model) throws Exception {
+		request.getSession().setAttribute("LoginVO", null);
+
+		return "redirect:/egov_security_logout";
+		/* return "forward:/mainPage.do"; */
+	}
+
+	/**
+	 * 로그아웃한다.
+	 * 
+	 * @return String
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/ManagerLogout.do")
+	public String ManagerLogout(HttpServletRequest request, ModelMap model) throws Exception {
+		request.getSession().setAttribute("LoginVO", null);
+
+		return "redirect:/egov_security_logout";
+		/* return "forward:/mainPage.do"; */
+	}
+
+	/**
+	 * 아이디/비밀번호 찾기 화면으로 들어간다
+	 * 
+	 * @param
+	 * @return 아이디/비밀번호 찾기 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/egovIdPasswordSearch.do")
+	public String idPasswordSearchView(ModelMap model) throws Exception {
+
+		// 1. 비밀번호 힌트 공통코드 조회
+		ComDefaultCodeVO vo = new ComDefaultCodeVO();
+		vo.setCodeId("COM022");
+		List<?> code = cmmUseService.selectCmmCodeDetail(vo);
+		model.addAttribute("pwhtCdList", code);
+
+		return "uat/uia/EgovIdPasswordSearch";
+	}
+
+	/**
+	 * 아이디를 찾는다.
+	 * 
+	 * @param vo
+	 *            - 이름, 이메일주소, 사용자구분이 담긴 LoginVO
+	 * @return result - 아이디
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/searchId.do")
+	public String searchId(@ModelAttribute("loginVO") LoginVO loginVO, ModelMap model) throws Exception {
+
+		if (loginVO == null || loginVO.getName() == null || loginVO.getName().equals("") && loginVO.getEmail() == null
+				|| loginVO.getEmail().equals("") && loginVO.getUserSe() == null || loginVO.getUserSe().equals("")) {
+			return "redirect:/com/cmm/egovError";
+		}
+
+		// 1. 아이디 찾기
+		loginVO.setName(loginVO.getName().replaceAll(" ", ""));
+		LoginVO resultVO = loginService.searchId(loginVO);
+
+		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
+
+			model.addAttribute("resultInfo", "아이디는 " + resultVO.getId() + " 입니다.");
+			return "uat/uia/EgovIdPasswordResult";
+		} else {
+			model.addAttribute("resultInfo", egovMessageSource.getMessage("fail.common.idsearch"));
+			return "uat/uia/EgovIdPasswordResult";
+		}
+	}
+
+	/**
+	 * 비밀번호를 찾는다.
+	 * 
+	 * @param vo
+	 *            - 아이디, 이름, 이메일주소, 비밀번호 힌트, 비밀번호 정답, 사용자구분이 담긴 LoginVO
+	 * @return result - 임시비밀번호전송결과
+	 * @exception Exception
+	 */
+	/*@RequestMapping(value = "/uat/uia/searchPassword.do")
+	public String searchPassword(@ModelAttribute("loginVO") LoginVO loginVO, ModelMap model) throws Exception {
+
+		// KISA 보안약점 조치 (2018-10-29, 윤창원)
+		if (loginVO == null || loginVO.getId() == null || loginVO.getId().equals("") && loginVO.getName() == null || "".equals(loginVO.getName()) && loginVO.getEmail() == null
+				|| loginVO.getEmail().equals("") && loginVO.getPasswordHint() == null || "".equals(loginVO.getPasswordHint()) && loginVO.getPasswordCnsr() == null
+				|| "".equals(loginVO.getPasswordCnsr()) && loginVO.getUserSe() == null || "".equals(loginVO.getUserSe())) {
+			return "/com/cmm/egovError";
+		}
+		// 1. 비밀번호 찾기
+		boolean result = loginService.searchPassword(loginVO);
+
+		// 2. 결과 리턴
+		if (result) {
+			model.addAttribute("resultInfo", "임시 비밀번호를 발송하였습니다.");
+			return "uat/uia/EgovIdPasswordResult";
+
+		} else {
+			model.addAttribute("resultInfo", egovMessageSource.getMessage("fail.common.pwsearch"));
+			return "uat/uia/EgovIdPasswordResult";
+		}
+	}*/
+	
+	@RequestMapping(value = "/uat/uia/searchPassword.do")
+	public String updatePasswordView_user(ModelMap model, @RequestParam Map<String, Object> commandMap, @ModelAttribute("searchVO") LoginVO loginVO
+			, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Enumeration params = request.getParameterNames();
+		System.out.println("----------------------------");
+		while (params.hasMoreElements()){
+		    String name = (String)params.nextElement();
+		    System.out.println(name + " : " +request.getParameter(name));
+		}
+		System.out.println("----------------------------");
+
+		
+		
+		if (loginVO == null || loginVO.getId() == null || loginVO.getId().equals("") && loginVO.getName() == null || "".equals(loginVO.getName()) && loginVO.getEmail() == null
+				|| loginVO.getEmail().equals("") && loginVO.getPasswordHint() == null || "".equals(loginVO.getPasswordHint()) && loginVO.getPasswordCnsr() == null
+				|| "".equals(loginVO.getPasswordCnsr()) && loginVO.getUserSe() == null || "".equals(loginVO.getUserSe())) {
+			return "/com/cmm/egovError";
+		}
+
+		
+		LoginVO result = loginService.searchPass(loginVO);
+		
+		
+
+		
+        
+  if(result.getId() ==null || result== null) {
+	  
+		response.setContentType("text/html; charset=UTF-8");
+		 
+		PrintWriter out = response.getWriter();
+		 
+		out.println("<script>alert('일치하는 정보가 없습니다.'); location.href='"+request.getServletContext().getContextPath()+"/uat/uia/egovLoginUsr.do';</script>");
+		 
+		out.flush();
+		
+		out.close();
+
+		return "redirect:/uat/uia/egovIdPasswordSearch.do";
+	  
+  }else {
+		model.addAttribute("mberManageVO", result);
+		return "uat/uia/PasswordUD";
+  }
+
+		
+	/*	return "usr/mypage/MberPasswordUpdt";*/
+		
+	/*	return "uat/uia/PasswordUD";*/
+		
+	}
+
+	/**
+	 * 개발 시스템 구축 시 발급된 GPKI 서버용인증서에 대한 암호화데이터를 구한다. 최초 한번만 실행하여, 암호화데이터를
+	 * EgovGpkiVariables.js의 ServerCert에 넣는다.
+	 * 
+	 * @return String
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/getEncodingData.do")
+	public void getEncodingData() throws Exception {
+
+		/*
+		 * X509Certificate x509Cert = null; byte[] cert = null; String base64cert =
+		 * null; try { x509Cert = Disk.readCert(
+		 * "/product/jeus/egovProps/gpkisecureweb/certs/SVR1311000011_env.cer"); cert =
+		 * x509Cert.getCert(); Base64 base64 = new Base64(); base64cert =
+		 * base64.encode(cert); log.info("+++ Base64로 변환된 인증서는 : " + base64cert);
+		 * 
+		 * } catch (GpkiApiException e) { e.printStackTrace(); }
+		 */
+	}
+
+	/**
+	 * 인증서 DN추출 팝업을 호출한다.
+	 * 
+	 * @return 인증서 등록 페이지
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/EgovGpkiRegist.do")
+	public String gpkiRegistView(HttpServletRequest request, HttpServletResponse response, ModelMap model)
+			throws Exception {
+
+		/** GPKI 인증 부분 */
+		// OS에 따라 (local NT(로컬) / server Unix(서버)) 구분
+		String os = System.getProperty("os.arch");
+		LOGGER.debug("OS : {}", os);
+
+		// String virusReturn = null;
+
+		/*
+		 * // 브라우저 이름을 받기위한 처리 String webKind = EgovClntInfo.getClntWebKind(request);
+		 * String[] ss = webKind.split(" "); String browser = ss[1];
+		 * model.addAttribute("browser",browser); // -- 여기까지 if
+		 * (os.equalsIgnoreCase("x86")) { //Local Host TEST 진행중 } else { if
+		 * (browser.equalsIgnoreCase("Explorer")) { GPKIHttpServletResponse gpkiresponse
+		 * = null; GPKIHttpServletRequest gpkirequest = null;
+		 * 
+		 * try { gpkiresponse = new GPKIHttpServletResponse(response); gpkirequest = new
+		 * GPKIHttpServletRequest(request);
+		 * 
+		 * gpkiresponse.setRequest(gpkirequest); model.addAttribute("challenge",
+		 * gpkiresponse.getChallenge());
+		 * 
+		 * return "egovframework/com/uat/uia/EgovGpkiRegist";
+		 * 
+		 * } catch (Exception e) { return "egovframework/com/cmm/egovError"; } } }
+		 */
+		return "uat/uia/EgovGpkiRegist";
+	}
+
+	/**
+	 * 인증서 DN값을 추출한다
+	 * 
+	 * @return result - dn값
+	 * @exception Exception
+	 */
+	@RequestMapping(value = "/uat/uia/actionGpkiRegist.do")
+	public String actionGpkiRegist(HttpServletRequest request, HttpServletResponse response, ModelMap model)
+			throws Exception {
+
+		/** GPKI 인증 부분 */
+		// OS에 따라 (local NT(로컬) / server Unix(서버)) 구분
+		String os = System.getProperty("os.arch");
+		LOGGER.debug("OS : {}", os);
+
+		// String virusReturn = null;
+		@SuppressWarnings("unused")
+		String dn = "";
+
+		// 브라우저 이름을 받기위한 처리
+		String webKind = EgovClntInfo.getClntWebKind(request);
+		String[] ss = webKind.split(" ");
+		String browser = ss[1];
+		model.addAttribute("browser", browser);
+		/*
+		 * // -- 여기까지 if (os.equalsIgnoreCase("x86")) { // Local Host TEST 진행중 } else {
+		 * if (browser.equalsIgnoreCase("Explorer")) { GPKIHttpServletResponse
+		 * gpkiresponse = null; GPKIHttpServletRequest gpkirequest = null; try {
+		 * gpkiresponse = new GPKIHttpServletResponse(response); gpkirequest = new
+		 * GPKIHttpServletRequest(request); gpkiresponse.setRequest(gpkirequest);
+		 * X509Certificate cert = null;
+		 * 
+		 * // byte[] signData = null; // byte[] privatekey_random = null; // String
+		 * signType = ""; // String queryString = "";
+		 * 
+		 * cert = gpkirequest.getSignerCert(); dn = cert.getSubjectDN();
+		 * 
+		 * model.addAttribute("dn", dn); model.addAttribute("challenge",
+		 * gpkiresponse.getChallenge());
+		 * 
+		 * return "egovframework/com/uat/uia/EgovGpkiRegist"; } catch (Exception e) {
+		 * return "egovframework/com/cmm/egovError"; } } }
+		 */
+		return "uat/uia/EgovGpkiRegist";
+	}
+
+	/* 네이버 로그임 처리  20191205*/
+
+	@RequestMapping(value = "/callback.do")
+	public String naver_callback(HttpServletRequest request, ModelMap model) throws Exception {
+
+		
+		return "naver/callback";
+
+	}
+	/* 네이버 로그임 처리  20191205*/
+	
+	/* 네이버 로그임 처리  20191209*/
+	@RequestMapping(value = "/sns_login.do")
+	public String sns_login(HttpServletRequest request, ModelMap model,
+			HttpSession session) throws Exception {
+
+		
+		return "naver/naverlogin";
+
+	}
+	/* 네이버 로그임 처리  20191209*/
+	
+	/* 연동 삭제 처리  20191209*/
+	/**
+     * sns 연동 삭제 처리(이용안내, mypage 출력을)
+     * @param menuManageVO MenuManageVO
+     * @return 출력페이지정보 "main_headG", "main_head"
+     * @exception Exception
+     */
+	@RequestMapping(value = "/sns_link_del.do")
+	public String sns_link_del(@ModelAttribute("LoginVo") LoginVO loginVO, ModelMap model, HttpServletRequest request)
+			throws Exception {
+
+		String selectedUId = loginVO.getUniqId();
+		
+		loginVO.setId(request.getParameter("mberId"));
+
+		try {
+			loginService.sns_link_del(loginVO);
+
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return "redirect:/MberUpdtView.do";
+
+	}
+	/* 연동 삭제 처리  20191209*/
+	
+
+}
+
+class RequestWrapperForSecurity extends HttpServletRequestWrapper {
+	private String username = null;
+	private String password = null;
+
+	public RequestWrapperForSecurity(HttpServletRequest request, String username, String password) {
+		super(request);
+
+		this.username = username;
+		this.password = password;
+	}
+
+	@Override
+	public String getServletPath() {
+		return ((HttpServletRequest) super.getRequest()).getContextPath() + "/egov_security_login";
+	}
+
+	@Override
+	public String getRequestURI() {
+		return ((HttpServletRequest) super.getRequest()).getContextPath() + "/egov_security_login";
+	}
+
+	@Override
+	public String getParameter(String name) {
+		if (name.equals("egov_security_username")) {
+			return username;
+		}
+
+		if (name.equals("egov_security_password")) {
+			return password;
+		}
+
+		return super.getParameter(name);
+	}
+
+}

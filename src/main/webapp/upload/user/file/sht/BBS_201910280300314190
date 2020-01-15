@@ -1,0 +1,75 @@
+게시판, 배너, 회원관리, 이용약관, 개인정보, 권한관리, 마아페이지, 공통코드
+
+
+필요
+메뉴, 로그, 문자, 메일 
+
+
+"공통코드"	"EgovCcmCmmnCodeList"	"6030000"	"6000000"	"3"	"공통코드"	"/"	"/"
+
+"공통상세코드"	"EgovCcmCmmnDetailCodeList"	"6020000"	"6000000"	"2"	"공통상세코드"	"/"	"/"
+
+"공통분류코드"	"EgovCcmCmmnClCodeList"	"6010000"	"6000000"	"1"	"공통분류코드"	"/"	"/"
+
+
+
+"EgovCcmCmmnCodeList"	"/sym/ccm/cca/"	"공통코드"	"공통코드"	"/sym/ccm/cca/EgovCcmCmmnCodeList.do"
+"EgovCcmCmmnDetailCodeList"	"/sym/ccm/cde/"	"공통상세코드"	"공통상세코드"	"/sym/ccm/cde/EgovCcmCmmnDetailCodeList.do"
+"EgovCcmCmmnClCodeList"	"/sym/ccm/ccc/"	"공통분류코드"	"공통분류코드"	"/sym/ccm/ccc/EgovCcmCmmnClCodeList.do"
+
+
+lettccmmncode
+
+
+<title>${pageTitle} <spring:message code="title.list" /></title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="<c:url value='/'/>css/default.css" type="text/css" >
+<link type="text/css" rel="stylesheet" href="<c:url value='/css/com22.css' />">
+
+
+<!-- login status start -->
+<div id="login_area"><c:import url="/EgovPageLink.do?link=main/inc/EgovIncTborder" /></div>
+<!-- //login status end -->
+<!-- wrap start -->
+<div id="wrap"> 
+    <!-- header start -->
+    <div id="subheader"><c:import url="/sym/mms/EgovMainMenuHead.do" /></div>  
+    <!-- //header end -->
+    <!--  타이틀 이미지 시작 -->
+    <div id="title_img_div"><img src="<c:url value='/'/>images/title_image/img_title06.gif" alt="" /></div>
+    <!--  //타이틀 이미지 끝 -->
+    <div id="bodywrap">
+        <div id="leftmenu_div"><c:import url="/sym/mms/EgovMainMenuLeft.do" /></div>
+        <div id="middle_content">
+            <!-- 현재위치 네비게이션 시작 -->
+            <div id="cur_loc">
+                    <div id="cur_loc_align">
+                        <ul>
+                            <li>HOME</li>
+                            <li>&gt;</li>
+                            <li>포털시스템관리</li>
+                            <li>&gt;</li>
+                            <li>사용자권한관리</li>
+                            <li>&gt;</li>
+                            <li><strong>공통코드</strong></li>
+                        </ul>
+                    </div>
+            </div>
+ <div id="content_field"><!--contents start-->
+        
+        
+            <!-- sub title start -->
+            <div><h2>공통코드</h2></div>
+            <!-- sub title end -->
+
+
+cop-bbs	cop-bbs	URL	2	게시판	2011-08-24 0:00
+
+sym-ccm-cca  /sym/ccm/cca/.*.do.* 공통코드 
+
+
+codeId
+
+codeIdNm
+
+useAt

@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="progrmManageDAO">
+
+	<!-- 프로그램 변경요청 -->
+	<resultMap id="progrmManageDtlVO"
+		class="egovframework.let.sym.prm.service.ProgrmManageDtlVO">
+		<result property="progrmFileNm" column="PROGRM_FILE_NM" />
+		<result property="rqesterNo" column="REQUST_NO" />
+		<result property="rqesterPersonId" column="RQESTER_ID" />
+		<result property="changerqesterCn" column="CHANGE_REQUST_CN" />
+		<result property="rqesterProcessCn" column="REQUST_PROCESS_CN" />
+		<result property="opetrId" column="OPETR_ID" />
+		<result property="processSttus" column="PROCESS_STTUS_CODE" />
+		<result property="processDe" column="PROCESS_DE" />
+		<result property="rqesterDe" column="RQESTDE" />
+		<result property="rqesterSj" column="REQUST_SJ" />
+	</resultMap>
+
+	<!-- 프로그램 변경요청 TMP -->
+	<resultMap id="progrmManageDtl_Temp"
+		class="egovframework.let.sym.prm.service.ProgrmManageDtlVO">
+		<result property="rqesterNo" column="REQUST_NO" />
+	</resultMap>
+
+	<select id="progrmManageDAO.selectProgrmChangeRequstList_D"
+		parameterClass="comDefaultVO" resultClass="egovMap">
+
+		SELECT
+		PROGRM_FILE_NM AS progrmFileNm
+		, REQUST_NO AS rqesterNo
+		, RQESTER_ID AS rqesterPersonId
+		, CHANGE_REQUST_CN AS changerqesterCn
+		, REQUST_PROCESS_CN AS rqesterProcessCn
+		, OPETR_ID AS opetrId
+		, PROCESS_STTUS_CODE AS processSttus
+		, PROCESS_DE AS processDe
+		, RQESTDE AS rqesterDe
+		, REQUST_SJ AS rqesterSj
+		FROM LETTHPROGRMCHANGEDTLS
+		WHERE binary(PROGRM_FILE_NM) like CONCAT('%', #searchKeyword#, '%')
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+
+	</select>
+
+	<!-- 총건수 조회 -->
+	<select id="progrmManageDAO.selectProgrmChangeRequstListTotCnt_S"
+		parameterClass="comDefaultVO" resultClass="int">
+
+		SELECT COUNT(*) AS totcnt
+		FROM LETTHPROGRMCHANGEDTLS
+		WHERE binary(PROGRM_FILE_NM) like CONCAT('%', #searchKeyword#, '%')
+
+	</select>
+
+	<select id="progrmManageDAO.selectProgrmChangeRequstNo_D"
+		parameterClass="egovframework.let.sym.prm.service.ProgrmManageDtlVO"
+		resultMap="progrmManageDtlVO">
+
+		select IFNULL(max(REQUST_NO),0)+1 AS rqesterNo
+		from LETTHPROGRMCHANGEDTLS
+
+	</select>
+
+	<select id="progrmManageDAO.selectProgrmChangeRequst_D"
+		parameterClass="egovframework.let.sym.prm.service.ProgrmManageDtlVO"
+		resultMap="progrmManageDtlVO">
+
+		SELECT
+		PROGRM_FILE_NM AS progrmFileNm
+		, REQUST_NO AS rqesterNo
+		, RQESTER_ID AS rqesterPersonId
+		, CHANGE_REQUST_CN AS changerqesterCn
+		, REQUST_PROCESS_CN AS rqesterProcessCn
+		, OPETR_ID AS opetrId
+		, PROCESS_STTUS_CODE AS processSttus
+		, PROCESS_DE AS processDe
+		, RQESTDE AS rqesterDe
+		, REQUST_SJ AS rqesterSj
+		FROM LETTHPROGRMCHANGEDTLS
+		WHERE PROGRM_FILE_NM=#progrmFileNm#
+		AND REQUST_NO =#rqesterNo#
+
+	</select>
+
+	<insert id="progrmManageDAO.insertProgrmChangeRequst_S">
+
+		INSERT INTO LETTHPROGRMCHANGEDTLS
+		( PROGRM_FILE_NM
+		, REQUST_NO
+		, RQESTER_ID
+		, CHANGE_REQUST_CN
+		, RQESTDE
+		, REQUST_SJ
+		,PROCESS_STTUS_CODE)
+		VALUES ( #progrmFileNm#
+		, #rqesterNo#
+		, #rqesterPersonId#
+		, #changerqesterCn#
+		, #rqesterDe#
+		, #rqesterSj#
+		, 'A')
+
+	</insert>
+
+	<update id="progrmManageDAO.updateProgrmChangeRequst_S">
+
+		UPDATE LETTHPROGRMCHANGEDTLS
+		SET RQESTER_ID = #rqesterPersonId#
+		, CHANGE_REQUST_CN = #changerqesterCn#
+		, RQESTDE = #rqesterDe#
+		, REQUST_SJ = #rqesterSj#
+		WHERE PROGRM_FILE_NM=#progrmFileNm#
+		AND REQUST_NO =#rqesterNo#
+
+	</update>
+
+	<delete id="progrmManageDAO.deleteProgrmChangeRequst_S">
+
+		DELETE FROM LETTHPROGRMCHANGEDTLS
+		WHERE PROGRM_FILE_NM=#progrmFileNm#
+		AND REQUST_NO =#rqesterNo#
+
+	</delete>
+
+	<update id="progrmManageDAO.updateProgrmChangeRequstProcess_S">
+
+		UPDATE LETTHPROGRMCHANGEDTLS
+		SET REQUST_PROCESS_CN = #rqesterProcessCn#
+		, OPETR_ID = #opetrId#
+		, PROCESS_STTUS_CODE = #processSttus#
+		, PROCESS_DE = #processDe#
+		WHERE PROGRM_FILE_NM=#progrmFileNm#
+		AND REQUST_NO =#rqesterNo#
+
+	</update>
+
+	<select id="progrmManageDAO.selectChangeRequstProcessList_D"
+		parameterClass="comDefaultVO" resultClass="egovMap">
+
+		SELECT
+		PROGRM_FILE_NM AS progrmFileNm
+		, REQUST_NO AS rqesterNo
+		, RQESTER_ID AS rqesterPersonId
+		, CHANGE_REQUST_CN AS changerqesterCn
+		, REQUST_PROCESS_CN AS rqesterProcessCn
+		, OPETR_ID AS opetrId
+		, PROCESS_STTUS_CODE AS processSttus
+		, PROCESS_DE AS processDe
+		, RQESTDE AS rqesterDe
+		, REQUST_SJ AS rqesterSj
+		FROM LETTHPROGRMCHANGEDTLS
+		WHERE 1=1
+
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="1">
+			binary(PROCESS_STTUS_CODE) like #searchKeyword#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="2">
+			binary(PROCESS_STTUS_CODE) = #searchKeyword#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="3">
+			RQESTDE between #searchKeywordFrom# and #searchKeywordTo#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="4">
+			binary(RQESTER_ID) like CONCAT('%', #searchKeyword#, '%')
+		</isEqual>
+		ORDER BY REQUST_NO ASC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+
+	<!-- 총건수 조회 binary(PROCESS_DE) >= #searchKeywordFrom# and binary(PROCESS_DE) 
+		=< #searchKeywordTo# -->
+	<select id="progrmManageDAO.selectChangeRequstProcessListTotCnt_S"
+		parameterClass="comDefaultVO" resultClass="int">
+
+		SELECT COUNT(*) AS totcnt
+		FROM LETTHPROGRMCHANGEDTLS
+		WHERE 1=1
+
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="1">
+			binary(PROCESS_STTUS_CODE) like #searchKeyword#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="2">
+			binary(PROCESS_STTUS_CODE) = #searchKeyword#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="3">
+			RQESTDE between #searchKeywordFrom# and #searchKeywordTo#
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition"
+			compareValue="4">
+			binary(RQESTER_ID) like CONCAT('%', #searchKeyword#, '%')
+		</isEqual>
+	</select>
+
+	<delete id="progrmManageDAO.deleteAllProgrmDtls">
+
+		DELETE FROM LETTHPROGRMCHANGEDTLS
+
+	</delete>
+
+	<select id="progrmManageDAO.selectRqesterEmail"
+		parameterClass="egovframework.let.sym.prm.service.ProgrmManageDtlVO"
+		resultMap="progrmManageDtlVO">
+
+		select user_email AS tmpEmail from COMVNUSERMASTER
+		where user_id = #rqesterPersonId#
+
+	</select>
+
+</sqlMap>

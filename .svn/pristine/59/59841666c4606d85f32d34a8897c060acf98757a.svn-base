@@ -1,0 +1,61 @@
+<%--
+  Class Name : EgovIncFooter.jsp
+  Description : 화면하단 Footer(include)
+  Modification Information
+ 
+      수정일         수정자                   수정내용
+    -------    --------    ---------------------------
+     2011.08.31   JJY       경량환경 버전 생성
+ 
+    author   : 실행환경개발팀 JJY
+    since    : 2011.08.31 
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<footer class="footer-wrap">
+<script type="text/javascript">
+function sPopUP(Code){
+	
+	  var page = "<c:url value='/selectPopUp.do'/>?Code="+Code;
+		var url= page;    //팝업창 페이지 URL
+		var winWidth = 760;
+	    var winHeight = 600;
+	    var popupOption= "width="+winWidth+", height="+winHeight;    //팝업창 옵션(optoin)
+		
+	    window.open(url,"popupView",popupOption); 
+}
+</script>
+		<div class="base-inner">
+			<div class="ft-logo">경기도형 대학생 취업브리지</div>
+			<div class="ft-menu-box clear">
+				<ul>
+
+					<li class="on"><a href="#" onclick="javascript:sPopUP('Privacy');">개인정보취급방침</a></li>
+					<li><a >이메일 무단수집방지정책</a></li>
+					<li><a href="#" onclick="javascript:sPopUP('Terms_of_Use');">이용약관</a></li>
+				</ul>
+			</div>
+			<div class="ft-site-box">
+				<select name="Related_Sites" id="Sites" onchange="chageLangSelect(this.value)">
+					<option value="" >관련사이트</option>
+					<option value="https://www.gg.go.kr" >경기도청</option>
+					<option value="https://www.gjf.or.kr">경기도 일자리 재단</option>
+					<option value="https://www.jobaba.net">잡아바</option>
+					<option value="https://www.work.go.kr" >워크넷</option>
+					<option value="https://www.youthcenter.go.kr">온라인청년센터</option>
+					<option value="https://www.dream.go.kr">꿈날개</option>
+				</select>
+			</div>
+			<div class="sec-address">
+				<div class="txt">(14576) 경기도 부천시 부천로 143, 3층(심곡동)</div>
+				<div class="txt">대표전화 : 031-270-9964 팩스번호 : 032-611-3029</div>
+			</div>
+			<div class="ft-banner">
+				<ul>
+					<li><a href="https://post.naver.com/gjf_job" target="_blank" class="sns-blog">블로그</a></li>
+					<li><a href="https://www.instagram.com/jobabanet/" target="_blank" class="sns-face">페이스북</a></li>
+					<li><a href="https://www.instagram.com/jobabanet/" target="_blank" class="sns-ins">인스타그램</a></li>
+				</ul>
+			</div>
+		</div>
+	</footer>
